@@ -55,27 +55,25 @@ class Paint():
         stroke_color = StringVar()
         stroke_color.set("black")
 
-        prevPoint = [0,0]
-        currentPoint = [0,0]
+        self.prevPoint = [0,0]
+        self.currentPoint = [0,0]
 
-        def paint(event):
-            global prevPoint
-            global currentPoint
+        def paint(self, event, prevPoint, currentPoint):
             x = event.x
             y = event.y
-            currentPoint = [x,y]
+            self.currentPoint = [x,y]
             #canvas.create_oval(x, y, x + 5, y + 5, fill="black")
 
             if prevPoint != [0,0] :
-                canvas.create_line(prevPoint[0] , prevPoint[1] , currentPoint[0] , currentPoint[1], fill = stroke_color.get())
+                canvas.create_line(prevPoint[0] , prevPoint[1] , self.currentPoint[0] , self.currentPoint[1], fill = stroke_color.get())
 
-            prevPoint = currentPoint
+            self.prevPoint = self.currentPoint
 
             if event.type == "5" :
-                prevPoint = [0,0]
+                self.prevPoint = [0,0]
 
-        canvas.bind("<B1-Motion>", paint)
-        canvas.bind("<ButtonRelease-1>" , paint)
+        canvas.bind("<B1-Motion>", lambda event: paint(self, event, self.prevPoint, self.currentPoint))
+        canvas.bind("<ButtonRelease-1>" , lambda event: paint(self, event, self.prevPoint, self.currentPoint))
 
         self.ventana.mainloop()
 
