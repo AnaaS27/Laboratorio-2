@@ -1,6 +1,9 @@
 from tkinter import * 
 from tkinter import colorchooser
 import PIL.ImageGrab as ImageGrab
+from tkinter import filedialog
+from tkinter import messagebox
+
 
 class Paint():
     def __init__(self):
@@ -60,11 +63,26 @@ class Paint():
                 self.prevPoint = [0,0]
 
         def saveImage():
-           x = self.ventana.winfo_rootx()
-           y = self.ventana.winfo_rooty()+100
-           img = ImageGrab.grab(bbox=(x,y,x+1100,y+500))
-           img.show()
+            try:
+               filelocation = filedialog.asksaveasfilename(defaultextension = "jpg")
+               x = self.ventana.winfo_rootx()
+               y = self.ventana.winfo_rooty()+100
+               img = ImageGrab.grab(bbox=(x,y,x+1100,y+500))
+               img.save(filelocation)
+               showImage = messagebox.askyesno("Paint" , "¿Desea abrir la Imagen?")
+               if showImage:
+                    img.show()
+            except Exception as e:
+                messagebox.showinfo("Paint" , "Ocurrio un error")
+            
+        def clear():
+            if messagebox.askokcancel("Paint" , "¿Quieres borrar todo?"):
+                canvas.delete("all")
 
+        def createNew():
+            if messagebox.askyesno("Paint" , "¿Quieres guardar los cambios antes de borrar todo?"):
+                clear()
+            
         frame1 = Frame(self.ventana, height=100, width=1100)
         frame1.grid(row=0, column=0, sticky= NW)
 
@@ -116,6 +134,12 @@ class Paint():
 
         saveImageFrame = Frame(frame1, height=100, width=100, relief=SUNKEN, borderwidth=3,)
         saveImageFrame.grid(row = 0 , column=4)
+
+        newImageButton = Button(saveImageFrame , text="New" , bg="white" , width=10 , command=createNew)
+        newImageButton.grid(row=1 , column=0)
+
+        clearImageButton = Button(saveImageFrame , text="Clear" , bg="white" , width=10 , command=clear)
+        clearImageButton.grid(row=2 , column=0)
 
         saveImageButton = Button(saveImageFrame , text="Save" , bg="white" , width=10 , command=saveImage)
         saveImageButton.grid(row=0, column=0)
