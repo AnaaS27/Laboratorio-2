@@ -28,6 +28,8 @@ class Paint():
         self.prevPoint = [0,0]
         self.currentPoint = [0,0]
 
+        textValue = StringVar()
+
         def usePencil():
             stroke_color.set("black")
             canvas["cursor"] = "arrow"
@@ -96,7 +98,10 @@ class Paint():
         
         def about():
             messagebox.showinfo("Acerca de", "Aplicacion de Pintura para estimular la creatividad de las personas")
-            
+
+        def writeText(event):
+            canvas.create_text(event.x, event.y, text=textValue.get())
+
         frame1 = Frame(self.ventana, height=100, width=1100)
         frame1.grid(row=0, column=0, sticky= NW)
 
@@ -160,15 +165,24 @@ class Paint():
 
         helpSettingFrame = Frame(frame1, height=100, width=100, relief=SUNKEN, borderwidth=3)
         helpSettingFrame.grid(row=0, column=5)
-
+        
         helpButton = Button(helpSettingFrame, text="Help", bg="white", width=10, command=help)
         helpButton.grid(row=0, column=0)
-
         settingButton = Button(helpSettingFrame, text="Settings", bg="white", width=10, command=settings)
         settingButton.grid(row=1, column=0)
-
         aboutButton = Button(helpSettingFrame, text="About", bg="white", width=10, command=about)
         aboutButton.grid(row=2, column=0)
+
+
+        textFrame = Frame(frame1, height=100, width=200, relief=SUNKEN, borderwidth=3)
+        textFrame.grid(row=0, column=6)
+
+        textTitleButton = Label(textFrame, text="Write you text here:", bg="white", width=20 )
+        textTitleButton.grid(row=0, column=0)
+        entryButton = Entry(textFrame, textvariable=textValue, bg="white", width=20 )
+        entryButton.grid(row=1, column=0)
+        clearButton = Button(textFrame, text="Clear", bg="white", width=20, command=lambda:textValue.set(""))
+        clearButton.grid(row=2, column=0)
 
         frame2 = Frame(self.ventana, height=500, width=1100, bg="light blue")
         frame2.grid(row=1, column=0)
@@ -178,6 +192,7 @@ class Paint():
         canvas.bind("<B1-Motion>", lambda event: paint(self, event, self.prevPoint, self.currentPoint))
         canvas.bind("<ButtonRelease-1>" , lambda event: paint(self, event, self.prevPoint, self.currentPoint))
         canvas.bind("<B3-Motion>", paintRight)
+        canvas.bind("<Button-1>", writeText)
 
         self.ventana.mainloop()
 
