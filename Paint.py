@@ -1,5 +1,6 @@
 from tkinter import * 
 from tkinter import colorchooser
+import PIL.ImageGrab as ImageGrab
 
 class Paint():
     def __init__(self):
@@ -8,18 +9,22 @@ class Paint():
         self.ventana.geometry("1100x600")
         self.ventana.resizable(0,0)
         
+        options = [1,2,3,4,5,10]
+
         stroke_size = IntVar()
         stroke_size.set(1)
 
         stroke_color = StringVar()
         stroke_color.set("black")
 
-        frame1 = Frame(self.ventana, height=100, width=1100)
-        frame1.grid(row=0, column=0, sticky= NW)
+        previousColor = StringVar()
+        previousColor.set("white")
+        previousColor2 = StringVar()
+        previousColor2.set("white")
 
-        toolsFrame = Frame(frame1 , height=100 , width=100, relief=SUNKEN, borderwidth=3)
-        toolsFrame.grid(row=0 , column=0)
-        
+        self.prevPoint = [0,0]
+        self.currentPoint = [0,0]
+
         def usePencil():
             stroke_color.set("black")
             canvas["cursor"] = "arrow"
@@ -27,38 +32,6 @@ class Paint():
         def useEraser():
             stroke_color.set("white")
             canvas["cursor"] = DOTBOX
-
-        pencilButton = Button(toolsFrame , text="Pencil" , width=10, command=usePencil)
-        pencilButton.grid(row=0 , column=0)
-
-        eraserButton = Button(toolsFrame , text="Eraser" , width=10, command=useEraser)
-        eraserButton.grid(row=1 , column=0)
-
-        toolsLabel = Label(toolsFrame , text="Tools" , width=10)
-        toolsLabel.grid(row=3 , column=0)
-
-        sizeFrame = Frame(frame1 , height=100 , width=100, relief=SUNKEN, borderwidth=3)
-        sizeFrame.grid(row=0 , column=1)
-
-        defaultButton = Button(sizeFrame, text="Default" , width=10, command=usePencil)
-        defaultButton.grid(row=0 , column=0)
-
-
-        options = [1,2,3,4,5,10]
-
-        sizeList = OptionMenu(sizeFrame, stroke_size, *options)
-        sizeList.grid(row=1, column=0)
-
-        sizeLabel = Label(sizeFrame , text="Size" , width=10)
-        sizeLabel.grid(row=2 , column=0)
-
-        colorBoxFrame = Frame(frame1, height=100, width=100, relief=SUNKEN, borderwidth=3)
-        colorBoxFrame.grid(row=0, column=2)
-
-        previousColor = StringVar()
-        previousColor.set("white")
-        previousColor2 = StringVar()
-        previousColor2.set("white")
 
         def selectColor():
             selectedColor = colorchooser.askcolor("blue", title="Select Color")
@@ -71,47 +44,6 @@ class Paint():
 
              previousColorButton["bg"] = previousColor.get()
              previousColor2Button["bg"] = previousColor2.get()
-            
-
-        colorBoxButton = Button(colorBoxFrame, text="Select Color", width=10, command=selectColor)
-        colorBoxButton.grid(row=0, column=0)
-
-        previousColorButton = Button(colorBoxFrame, text="Previous", width=10, command=lambda:stroke_color.set(previousColor.get()))
-        previousColorButton.grid(row=1, column=0)
-
-        previousColor2Button = Button(colorBoxFrame, text="Previous 2", width=10, command=lambda:stroke_color.set(previousColor2.get()))
-        previousColor2Button.grid(row=2, column=0)
-
-        colorsFrame = Frame(frame1, height=100, width=100, relief=SUNKEN, borderwidth=3,)
-        colorsFrame.grid(row = 0 , column=3)
-
-        redButton = Button(colorsFrame , text="Red" , bg="Red" , width=10 , command=lambda: stroke_color.set("red"))
-        redButton.grid(row=0, column=0)
-
-        greenButton = Button(colorsFrame , text="Green" , bg="Green" , width=10 , command=lambda: stroke_color.set("Green"))
-        greenButton.grid(row=1, column=0)
-
-        blueButton = Button(colorsFrame , text="Blue" , bg="Blue" , width=10 , command=lambda: stroke_color.set("Blue"))
-        blueButton.grid(row=2 , column=0) 
-
-        yellowButton = Button(colorsFrame , text="Yellow" , bg="yellow" , width=10 , command=lambda: stroke_color.set("yellow"))
-        yellowButton.grid(row=0, column=1)
-
-        orangeButton = Button(colorsFrame , text="Orange" , bg="orange" , width=10 , command=lambda: stroke_color.set("orange"))
-        orangeButton.grid(row=1, column=1)
-
-        purpleButton = Button(colorsFrame , text="Purple" , bg="purple" , width=10 , command=lambda: stroke_color.set("purple"))
-        purpleButton.grid(row=2 , column=1)
-
-
-        frame2 = Frame(self.ventana, height=500, width=1100, bg="light blue")
-        frame2.grid(row=1, column=0)
-
-        canvas = Canvas(frame2, height=500, width=1100, bg="white")
-        canvas.grid(row=0, column=0)
-
-        self.prevPoint = [0,0]
-        self.currentPoint = [0,0]
 
         def paint(self, event, prevPoint, currentPoint):
             x = event.x
@@ -127,6 +59,72 @@ class Paint():
             if event.type == "5" :
                 self.prevPoint = [0,0]
 
+        def saveImage():
+           x = self.ventana.winfo_rootx()
+           y = self.ventana.winfo_rooty()+100
+           img = ImageGrab.grab(bbox=(x,y,x+1100,y+500))
+           img.show()
+
+        frame1 = Frame(self.ventana, height=100, width=1100)
+        frame1.grid(row=0, column=0, sticky= NW)
+
+        toolsFrame = Frame(frame1 , height=100 , width=100, relief=SUNKEN, borderwidth=3)
+        toolsFrame.grid(row=0 , column=0)
+
+        pencilButton = Button(toolsFrame , text="Pencil" , width=10, command=usePencil)
+        pencilButton.grid(row=0 , column=0)
+        eraserButton = Button(toolsFrame , text="Eraser" , width=10, command=useEraser)
+        eraserButton.grid(row=1 , column=0)
+        toolsLabel = Label(toolsFrame , text="Tools" , width=10)
+        toolsLabel.grid(row=3 , column=0)
+
+        sizeFrame = Frame(frame1 , height=100 , width=100, relief=SUNKEN, borderwidth=3)
+        sizeFrame.grid(row=0 , column=1)
+
+        defaultButton = Button(sizeFrame, text="Default" , width=10, command=usePencil)
+        defaultButton.grid(row=0 , column=0)
+        sizeList = OptionMenu(sizeFrame, stroke_size, *options)
+        sizeList.grid(row=1, column=0)
+        sizeLabel = Label(sizeFrame , text="Size" , width=10)
+        sizeLabel.grid(row=2 , column=0)
+
+        colorBoxFrame = Frame(frame1, height=100, width=100, relief=SUNKEN, borderwidth=3)
+        colorBoxFrame.grid(row=0, column=2)
+
+        colorBoxButton = Button(colorBoxFrame, text="Select Color", width=10, command=selectColor)
+        colorBoxButton.grid(row=0, column=0)
+        previousColorButton = Button(colorBoxFrame, text="Previous", width=10, command=lambda:stroke_color.set(previousColor.get()))
+        previousColorButton.grid(row=1, column=0)
+        previousColor2Button = Button(colorBoxFrame, text="Previous 2", width=10, command=lambda:stroke_color.set(previousColor2.get()))
+        previousColor2Button.grid(row=2, column=0)
+
+        colorsFrame = Frame(frame1, height=100, width=100, relief=SUNKEN, borderwidth=3,)
+        colorsFrame.grid(row = 0 , column=3)
+
+        redButton = Button(colorsFrame , text="Red" , bg="Red" , width=10 , command=lambda: stroke_color.set("red"))
+        redButton.grid(row=0, column=0)
+        greenButton = Button(colorsFrame , text="Green" , bg="Green" , width=10 , command=lambda: stroke_color.set("Green"))
+        greenButton.grid(row=1, column=0)
+        blueButton = Button(colorsFrame , text="Blue" , bg="Blue" , width=10 , command=lambda: stroke_color.set("Blue"))
+        blueButton.grid(row=2 , column=0) 
+        yellowButton = Button(colorsFrame , text="Yellow" , bg="yellow" , width=10 , command=lambda: stroke_color.set("yellow"))
+        yellowButton.grid(row=0, column=1)
+        orangeButton = Button(colorsFrame , text="Orange" , bg="orange" , width=10 , command=lambda: stroke_color.set("orange"))
+        orangeButton.grid(row=1, column=1)
+        purpleButton = Button(colorsFrame , text="Purple" , bg="purple" , width=10 , command=lambda: stroke_color.set("purple"))
+        purpleButton.grid(row=2 , column=1)
+
+        saveImageFrame = Frame(frame1, height=100, width=100, relief=SUNKEN, borderwidth=3,)
+        saveImageFrame.grid(row = 0 , column=4)
+
+        saveImageButton = Button(saveImageFrame , text="Save" , bg="white" , width=10 , command=saveImage)
+        saveImageButton.grid(row=0, column=0)
+
+        frame2 = Frame(self.ventana, height=500, width=1100, bg="light blue")
+        frame2.grid(row=1, column=0)
+
+        canvas = Canvas(frame2, height=500, width=1100, bg="white")
+        canvas.grid(row=0, column=0)
         canvas.bind("<B1-Motion>", lambda event: paint(self, event, self.prevPoint, self.currentPoint))
         canvas.bind("<ButtonRelease-1>" , lambda event: paint(self, event, self.prevPoint, self.currentPoint))
 
