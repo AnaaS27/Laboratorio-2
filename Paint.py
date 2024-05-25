@@ -184,6 +184,18 @@ class Paint():
         clearButton = Button(textFrame, text="Clear", bg="white", width=20, command=lambda:textValue.set(""))
         clearButton.grid(row=2, column=0)
 
+        noteFrame = Frame(frame1 ,  height=100 , width=200 , relief=SUNKEN , borderwidth=3)
+        noteFrame.grid(row = 0 , column = 7)
+
+        textTitleButton = Text(noteFrame, bg="white", width=40, height=4 )
+        textTitleButton.grid(row=0, column=0)
+        #entryButton = Entry(textFrame, textvariable=textValue, bg="white", width=20 )
+        #entryButton.grid(row=1, column=0)
+        #clearButton = Button(textFrame, text="Clear", bg="white", width=20, command=lambda:textValue.set(""))
+        #clearButton.grid(row=2, column=0)
+
+
+
         frame2 = Frame(self.ventana, height=500, width=1100, bg="light blue")
         frame2.grid(row=1, column=0)
 
