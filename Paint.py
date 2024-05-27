@@ -63,12 +63,12 @@ class Paint():
         toolsFrame = Frame(frame1 , height=100 , width=100, relief=SUNKEN, borderwidth=3)
         toolsFrame.grid(row=0 , column=0)
 
-        pencilIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\pencil.png")
+        pencilIcon = tk.PhotoImage(file=r"icons\pencil.png")
         pencilButton = Button(toolsFrame , text="Lapiz" , bg="white", width=65,  image=pencilIcon, compound=LEFT, command=self.usePencil)
         pencilButton.grid(row=0 , column=0)
         Tooltip(pencilButton, "Presione para Dibujar")
 
-        eraserIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\borrador.png")
+        eraserIcon = tk.PhotoImage(file=r"icons\borrador.png")
         eraserButton = Button(toolsFrame , text="Borrador" , bg="white", width=65, command=self.useEraser, image=eraserIcon, compound=LEFT)
         eraserButton.grid(row=1 , column=0)
         Tooltip(eraserButton, "Presione para borrar")
@@ -92,11 +92,11 @@ class Paint():
         colorBoxFrame = Frame(frame1, height=100, width=100, relief=SUNKEN, borderwidth=3)
         colorBoxFrame.grid(row=0, column=2)
 
-        paletaIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\palette.png")
+        paletaIcon = tk.PhotoImage(file=r"icons\palette.png")
         colorBoxButton = Button(colorBoxFrame, text="Seleccionar Color", bg="white", width=115, command=self.selectColor, image=paletaIcon, compound=LEFT)
         colorBoxButton.grid(row=0, column=0)
 
-        anteriorIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\anterior.png")
+        anteriorIcon = tk.PhotoImage(file=r"icons\anterior.png")
         self.previousColorButton = Button(colorBoxFrame, text="Color Anterior", bg="white", width=115, command=lambda:self.colorTrazo.set(self.previousColor.get()), image=anteriorIcon, compound=LEFT)
         self.previousColorButton.grid(row=1, column=0)
 
@@ -131,19 +131,19 @@ class Paint():
         saveImageFrame = Frame(frame1, height=100, width=100, relief=SUNKEN, borderwidth=3,)
         saveImageFrame.grid(row = 0 , column=4)
 
-        nuevoIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\new.png")
+        nuevoIcon = tk.PhotoImage(file=r"icons\new.png")
         newImageButton = Button(saveImageFrame , text="Nuevo" , bg="white" , width=80, height=20, command=self.createNew, image=nuevoIcon)
         newImageButton.grid(row=1 , column=0)
         Tooltip(newImageButton, "Presione para crear un nuevo lienzo")
         newImageButton.bind("<Control-n>", self.createNew)
 
-        limpiarIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\limpiar.png")
+        limpiarIcon = tk.PhotoImage(file=r"icons\limpiar.png")
         clearImageButton = Button(saveImageFrame , text="Limpiar" , bg="white" , width=80 , command=self.clear, image=limpiarIcon, compound=LEFT)
         clearImageButton.grid(row=2 , column=0)
         Tooltip(clearImageButton, "Presione Para Limpiar Lienzo")
         clearImageButton.bind("<Control-l>", self.clear)
 
-        guardarIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\guardar.png")
+        guardarIcon = tk.PhotoImage(file=r"icons\guardar.png")
         saveImageButton = Button(saveImageFrame , text="Guardar" , bg="white" , width=80, command=self.saveImage, image=guardarIcon, compound=LEFT)
         saveImageButton.grid(row=0, column=0)
         Tooltip(saveImageButton, "Presione Para Guardar Imagen")
@@ -152,19 +152,19 @@ class Paint():
         helpSettingFrame = Frame(frame1, height=100, width=100, relief=SUNKEN, borderwidth=3)
         helpSettingFrame.grid(row=0, column=5)
 
-        ayudaIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\help.png")   
+        ayudaIcon = tk.PhotoImage(file=r"icons\help.png")   
         helpButton = Button(helpSettingFrame, text="Ayuda", bg="white", width=80, command=help, image=ayudaIcon, compound=LEFT)
         helpButton.grid(row=1, column=0)
         Tooltip(helpButton, "Ayuda")
         helpButton.bind("<Control-a>", self.help)
         
-        deshacerIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\deshacer.png")
+        deshacerIcon = tk.PhotoImage(file=r"icons\deshacer.png")
         undoButton = Button(helpSettingFrame, text="Deshacer", bg="white", width=80, command=self.undo, image=deshacerIcon, compound=LEFT)
         undoButton.grid(row=0, column=0)
         Tooltip(undoButton, "Presione el Boton Para Deshacer")
         undoButton.bind("Control-d", self.undo)
 
-        infoIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\information.png")
+        infoIcon = tk.PhotoImage(file=r"icons\information.png")
         aboutButton = Button(helpSettingFrame, text="Acerca De", bg="white", width=80, command=self.about, image=infoIcon, compound=LEFT)
         aboutButton.grid(row=2, column=0)
         Tooltip(aboutButton, "Acerca de")
@@ -183,7 +183,7 @@ class Paint():
         clearButton.grid(row=2, column=0)
         Tooltip(clearButton, "Presione Para Ingresar el Texto Limpiar")
 
-        imagenesIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\pictures.png")
+        imagenesIcon = tk.PhotoImage(file=r"icons\pictures.png")
         importFrame = Frame(frame1, height=100, width=200, relief=SUNKEN, borderwidth=3)
         importFrame.grid(row=0, column=8)
         importImageButton = Button(importFrame, text="Insertar Imagen", bg="white", width=100, command=self.import_image, image=imagenesIcon, compound=LEFT)
