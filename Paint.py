@@ -28,7 +28,19 @@ class Paint():
         self.prevPoint = [0,0]
         self.currentPoint = [0,0]
 
+        self.formas_var = StringVar()
+        self.formas_var.set("Figuras")
+
+        self.forma = None
+
+        self.forma_start_x = None
+        self.forma_start_y = None
+
+        self.actions = []
+
         self.textValue = StringVar()
+
+        self.principal()
 
     def principal(self):
         frame1 = Frame(self.ventana, height=100, width=1100)
@@ -37,17 +49,17 @@ class Paint():
         toolsFrame = Frame(frame1 , height=100 , width=100, relief=SUNKEN, borderwidth=3)
         toolsFrame.grid(row=0 , column=0)
 
-        pencilButton = Button(toolsFrame , text="Lapiz" , width=10, command=self.usePencil)
+        pencilButton = Button(toolsFrame , text="Lapiz" , bg="white", width=10, command=self.usePencil)
         pencilButton.grid(row=0 , column=0)
-        eraserButton = Button(toolsFrame , text="Borrador" , width=10, command=self.useEraser)
+        eraserButton = Button(toolsFrame , text="Borrador" , bg="white", width=10, command=self.useEraser)
         eraserButton.grid(row=1 , column=0)
-        toolsLabel = Label(toolsFrame , text="Herramientas" , width=10)
-        toolsLabel.grid(row=3 , column=0)
+        toolsLabel = Label(toolsFrame , text="Herramientas" , width=9)
+        toolsLabel.grid(row=4 , column=0)
 
         sizeFrame = Frame(frame1 , height=100 , width=100, relief=SUNKEN, borderwidth=3)
         sizeFrame.grid(row=0 , column=1)
 
-        defaultButton = Button(sizeFrame, text="Por Defecto" , width=10, command=self.usePencil)
+        defaultButton = Button(sizeFrame, text="Por Defecto" , bg="white", width=10, command=self.usePencil)
         defaultButton.grid(row=0 , column=0)
         sizeList = OptionMenu(sizeFrame, self.tamañoTrazo, *self.opciones)
         sizeList.grid(row=1, column=0)
@@ -57,27 +69,29 @@ class Paint():
         colorBoxFrame = Frame(frame1, height=100, width=100, relief=SUNKEN, borderwidth=3)
         colorBoxFrame.grid(row=0, column=2)
 
-        colorBoxButton = Button(colorBoxFrame, text="Seleccionar Color", width=10, command=self.selectColor)
+        colorBoxButton = Button(colorBoxFrame, text="Seleccionar Color", bg="white", width=15, command=self.selectColor)
         colorBoxButton.grid(row=0, column=0)
-        self.previousColorButton = Button(colorBoxFrame, text="Color Anterior", width=10, command=lambda:self.colorTrazo.set(self.previousColor.get()))
+        self.previousColorButton = Button(colorBoxFrame, text="Color Anterior", bg="white", width=15, command=lambda:self.colorTrazo.set(self.previousColor.get()))
         self.previousColorButton.grid(row=1, column=0)
-        self.previousColor2Button = Button(colorBoxFrame, text="Color Anterior 2", width=10, command=lambda:self.colorTrazo.set(self.previousColor2.get()))
+        self.previousColor2Button = Button(colorBoxFrame, text="Color Anterior 2", bg="white", width=15, command=lambda:self.colorTrazo.set(self.previousColor2.get()))
         self.previousColor2Button.grid(row=2, column=0)
+        coloresLabel = Label(colorBoxFrame, text="Colores", width=10)
+        coloresLabel.grid(row=4, column=0)
 
         colorsFrame = Frame(frame1, height=100, width=100, relief=SUNKEN, borderwidth=3,)
         colorsFrame.grid(row = 0 , column=3)
 
-        redButton = Button(colorsFrame , bg="Red" , width=10 , command=lambda: self.colorTrazo.set("red"))
+        redButton = Button(colorsFrame , bg="Red" , width=3 , command=lambda: self.colorTrazo.set("red"))
         redButton.grid(row=0, column=0)
-        greenButton = Button(colorsFrame , bg="Green" , width=10 , command=lambda: self.colorTrazo.set("Green"))
+        greenButton = Button(colorsFrame , bg="Green" , width=3 , command=lambda: self.colorTrazo.set("Green"))
         greenButton.grid(row=1, column=0)
-        blueButton = Button(colorsFrame , bg="Blue" , width=10 , command=lambda: self.colorTrazo.set("Blue"))
+        blueButton = Button(colorsFrame , bg="Blue" , width=3 , command=lambda: self.colorTrazo.set("Blue"))
         blueButton.grid(row=2 , column=0) 
-        yellowButton = Button(colorsFrame , bg="yellow" , width=10 , command=lambda: self.colorTrazo.set("yellow"))
+        yellowButton = Button(colorsFrame , bg="yellow" , width=3 , command=lambda: self.colorTrazo.set("yellow"))
         yellowButton.grid(row=0, column=1)
-        orangeButton = Button(colorsFrame , bg="orange" , width=10 , command=lambda: self.colorTrazo.set("orange"))
+        orangeButton = Button(colorsFrame , bg="orange" , width=3 , command=lambda: self.colorTrazo.set("orange"))
         orangeButton.grid(row=1, column=1)
-        purpleButton = Button(colorsFrame , bg="purple" , width=10 , command=lambda: self.colorTrazo.set("purple"))
+        purpleButton = Button(colorsFrame , bg="purple" , width=3 , command=lambda: self.colorTrazo.set("purple"))
         purpleButton.grid(row=2 , column=1)
 
         saveImageFrame = Frame(frame1, height=100, width=100, relief=SUNKEN, borderwidth=3,)
@@ -96,7 +110,10 @@ class Paint():
         helpSettingFrame.grid(row=0, column=5)
         
         helpButton = Button(helpSettingFrame, text="Ayuda", bg="white", width=10, command=help)
-        helpButton.grid(row=0, column=0)
+        helpButton.grid(row=1, column=0)
+
+        undoButton = Button(helpSettingFrame, text="Deshacer", bg="white", width=10, command=self.undo)
+        undoButton.grid(row=0, column=0)
         
         aboutButton = Button(helpSettingFrame, text="Acerca De", bg="white", width=10, command=self.about)
         aboutButton.grid(row=2, column=0)
@@ -118,17 +135,25 @@ class Paint():
         textTitleButton = Text(noteFrame, bg="white", width=40, height=4 )
         textTitleButton.grid(row=0, column=0) 
 
+        self.create_menu(toolsFrame)
+
         frame2 = Frame(self.ventana, height=500, width=1100, bg="light blue")
         frame2.grid(row=1, column=0)
 
         self.canvas = Canvas(frame2, height=500, width=1100, bg="white")
         self.canvas.grid(row=0, column=0)
-        self.canvas.bind("<B1-Motion>", lambda event: self.paint(self, event, self.prevPoint, self.currentPoint))
-        self.canvas.bind("<ButtonRelease-1>" , lambda event: self.paint(self, event, self.prevPoint, self.currentPoint))
+        self.canvas.bind("<B1-Motion>", self.paint)
+        self.canvas.bind("<ButtonRelease-1>" , self.paint)
         self.canvas.bind("<B3-Motion>", self.paintRight)
         self.canvas.bind("<Button-1>", self.writeText)
+        self.canvas.bind("<ButtonPress-2>", self.start_forma)
 
         self.ventana.mainloop()
+
+    def create_menu(self, toolsFrame):
+        formas = ["Linea", "Rectángulo", "Óvalo", "Poligono"]
+        formas_menu = OptionMenu(toolsFrame, self.formas_var, *formas, command=self.select_forma)
+        formas_menu.grid(row=3, column=0)
 
     def usePencil(self):
         self.colorTrazo.set("black")
@@ -137,6 +162,36 @@ class Paint():
     def useEraser(self):
         self.colorTrazo.set("white")
         self.canvas["cursor"] = DOTBOX
+
+    def useLine(self):
+        self.forma = "line"
+        self.canvas["cursor"] = "crosshair"
+
+    def useRectangle(self):
+        self.forma = "rectangle"
+        self.canvas["cursor"] = "crosshair"
+
+    def useOval(self):
+        self.forma = "oval"
+        self.canvas["cursor"] = "crosshair"
+
+    def usePolygon(self):
+        self.forma= "polygon"
+        self.canvas["cursor"] = "crosshair"
+
+    def start_forma(self, event):
+        self.forma_start_x = event.x
+        self.forma_start_y = event.y
+
+    def select_forma(self, forma):
+        if forma == "Linea":
+            self.useLine()
+        elif forma == "Rectángulo":
+            self.useRectangle()
+        elif forma == "Óvalo":
+            self.useOval()
+        elif forma == "Poligono":
+            self.usePolygon()
 
     def selectColor(self):
         selectedColor = colorchooser.askcolor("blue", title="Seleccionar Color")
@@ -156,16 +211,19 @@ class Paint():
             self.currentPoint = [x, y]
 
             if self.prevPoint != [0, 0]:
-                self.canvas.create_line(self.prevPoint[0], self.prevPoint[1], self.currentPoint[0], self.currentPoint[1],
-                                        fill=self.colorTrazo.get(), width=self.tamañoTrazo.get())
+                self.actions.append(self.canvas.create_line(self.prevPoint[0], self.prevPoint[1], self.currentPoint[0], self.currentPoint[1],
+                                        fill=self.colorTrazo.get(), width=self.tamañoTrazo.get()))
 
             self.prevPoint = self.currentPoint
     
     def paintRight(self,event):
         x = event.x
         y = event.y
-        self.canvas.create_arc(x,y,x+self.tamañoTrazo.get(), y+self.tamañoTrazo.get(), fill = self.colorTrazo.get(), outline=self.colorTrazo.get(), width=self.tamañoTrazo.get())
+        self.actions.append(self.canvas.create_arc(x,y,x+self.tamañoTrazo.get(), y+self.tamañoTrazo.get(), fill = self.colorTrazo.get(), outline=self.colorTrazo.get(), width=self.tamañoTrazo.get()))
 
+    def reset(self, event):
+        self.prevPoint = [0, 0]
+    
     def saveImage(self):
         try:
             filename = filedialog.asksaveasfilename(defaultextension=".png")
@@ -180,16 +238,24 @@ class Paint():
                 imagen.show()
         except:
             messagebox.showerror("Paint", "¡¡La imagen no se guardo. Intente de nuevo!!")
+    
+    def undo(self):
+        if len(self.actions) > 0:
+            self.canvas.delete(self.actions.pop())
+        else:
+            messagebox.showwarning("Advertencia", "No hay más acciones para deshacer")
         
     def clear(self):
         if messagebox.askokcancel("Paint" , "¿Quieres borrar todo?"):
-            self.canvas.delete("all")
+            self.canvas.delete(ALL)
+            self.actions = []
 
     def createNew(self):
         respuesta = messagebox.askyesno("Nuevo", "¿Quieres guardar el Lienzo actual?")
         if respuesta == True:
             self.saveImage()
         self.canvas.delete(ALL)
+        self.actions = []
 
     def help():
         messagebox.showinfo("Ayuda", "1. Click en el Boton Seleccionar Color para elegir un color especifico\n2. Click en el Boton Limpiar para limpiar el Lienzo")
@@ -200,7 +266,7 @@ class Paint():
     def writeText(self, event):
             x = event.x
             y = event.y
-            self.canvas.create_text(x, y, fill=self.colorTrazo.get(), font=("Arial", 20), text=self.textValue.get())
+            self.actions.append(self.canvas.create_text(x, y, fill=self.colorTrazo.get(), font=("Arial", 20), text=self.textValue.get()))
             self.textValue.set("")
     
 
