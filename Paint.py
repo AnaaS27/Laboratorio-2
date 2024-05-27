@@ -3,6 +3,8 @@ from tkinter import colorchooser
 import PIL.ImageGrab as ImageGrab
 from tkinter import filedialog
 from tkinter import messagebox
+import tkinter as tk
+import math
 
 
 class Paint():
@@ -49,10 +51,14 @@ class Paint():
         toolsFrame = Frame(frame1 , height=100 , width=100, relief=SUNKEN, borderwidth=3)
         toolsFrame.grid(row=0 , column=0)
 
-        pencilButton = Button(toolsFrame , text="Lapiz" , bg="white", width=10, command=self.usePencil)
+        pencilIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\pencil.png")
+        pencilButton = Button(toolsFrame , text="Lapiz" , bg="white", width=65,  image=pencilIcon, compound=LEFT, command=self.usePencil)
         pencilButton.grid(row=0 , column=0)
-        eraserButton = Button(toolsFrame , text="Borrador" , bg="white", width=10, command=self.useEraser)
+
+        eraserIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\borrador.png")
+        eraserButton = Button(toolsFrame , text="Borrador" , bg="white", width=65, command=self.useEraser, image=eraserIcon, compound=LEFT)
         eraserButton.grid(row=1 , column=0)
+
         toolsLabel = Label(toolsFrame , text="Herramientas" , width=9)
         toolsLabel.grid(row=4 , column=0)
 
@@ -61,20 +67,27 @@ class Paint():
 
         defaultButton = Button(sizeFrame, text="Por Defecto" , bg="white", width=10, command=self.usePencil)
         defaultButton.grid(row=0 , column=0)
+
         sizeList = OptionMenu(sizeFrame, self.tamañoTrazo, *self.opciones)
         sizeList.grid(row=1, column=0)
+
         sizeLabel = Label(sizeFrame , text="Tamaño" , width=10)
         sizeLabel.grid(row=2 , column=0)
 
         colorBoxFrame = Frame(frame1, height=100, width=100, relief=SUNKEN, borderwidth=3)
         colorBoxFrame.grid(row=0, column=2)
 
-        colorBoxButton = Button(colorBoxFrame, text="Seleccionar Color", bg="white", width=15, command=self.selectColor)
+        paletaIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\palette.png")
+        colorBoxButton = Button(colorBoxFrame, text="Seleccionar Color", bg="white", width=115, command=self.selectColor, image=paletaIcon, compound=LEFT)
         colorBoxButton.grid(row=0, column=0)
-        self.previousColorButton = Button(colorBoxFrame, text="Color Anterior", bg="white", width=15, command=lambda:self.colorTrazo.set(self.previousColor.get()))
+
+        anteriorIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\anterior.png")
+        self.previousColorButton = Button(colorBoxFrame, text="Color Anterior", bg="white", width=115, command=lambda:self.colorTrazo.set(self.previousColor.get()), image=anteriorIcon, compound=LEFT)
         self.previousColorButton.grid(row=1, column=0)
-        self.previousColor2Button = Button(colorBoxFrame, text="Color Anterior 2", bg="white", width=15, command=lambda:self.colorTrazo.set(self.previousColor2.get()))
+
+        self.previousColor2Button = Button(colorBoxFrame, text="Color Anterior 2", bg="white", width=115, command=lambda:self.colorTrazo.set(self.previousColor2.get()), image=anteriorIcon, compound=LEFT)
         self.previousColor2Button.grid(row=2, column=0)
+
         coloresLabel = Label(colorBoxFrame, text="Colores", width=10)
         coloresLabel.grid(row=4, column=0)
 
@@ -97,25 +110,31 @@ class Paint():
         saveImageFrame = Frame(frame1, height=100, width=100, relief=SUNKEN, borderwidth=3,)
         saveImageFrame.grid(row = 0 , column=4)
 
-        newImageButton = Button(saveImageFrame , text="Nuevo" , bg="white" , width=10 , command=self.createNew)
+        nuevoIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\new.png")
+        newImageButton = Button(saveImageFrame , text="Nuevo" , bg="white" , width=80, height=20, command=self.createNew, image=nuevoIcon)
         newImageButton.grid(row=1 , column=0)
 
-        clearImageButton = Button(saveImageFrame , text="Limpiar" , bg="white" , width=10 , command=self.clear)
+        limpiarIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\limpiar.png")
+        clearImageButton = Button(saveImageFrame , text="Limpiar" , bg="white" , width=80 , command=self.clear, image=limpiarIcon, compound=LEFT)
         clearImageButton.grid(row=2 , column=0)
 
-        saveImageButton = Button(saveImageFrame , text="Guardar" , bg="white" , width=10 , command=self.saveImage)
+        guardarIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\guardar.png")
+        saveImageButton = Button(saveImageFrame , text="Guardar" , bg="white" , width=80, command=self.saveImage, image=guardarIcon, compound=LEFT)
         saveImageButton.grid(row=0, column=0)
 
         helpSettingFrame = Frame(frame1, height=100, width=100, relief=SUNKEN, borderwidth=3)
         helpSettingFrame.grid(row=0, column=5)
-        
-        helpButton = Button(helpSettingFrame, text="Ayuda", bg="white", width=10, command=help)
+
+        ayudaIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\help.png")   
+        helpButton = Button(helpSettingFrame, text="Ayuda", bg="white", width=80, command=help, image=ayudaIcon, compound=LEFT)
         helpButton.grid(row=1, column=0)
 
-        undoButton = Button(helpSettingFrame, text="Deshacer", bg="white", width=10, command=self.undo)
+        deshacerIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\deshacer.png")
+        undoButton = Button(helpSettingFrame, text="Deshacer", bg="white", width=80, command=self.undo, image=deshacerIcon, compound=LEFT)
         undoButton.grid(row=0, column=0)
         
-        aboutButton = Button(helpSettingFrame, text="Acerca De", bg="white", width=10, command=self.about)
+        infoIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\information.png")
+        aboutButton = Button(helpSettingFrame, text="Acerca De", bg="white", width=80, command=self.about, image=infoIcon, compound=LEFT)
         aboutButton.grid(row=2, column=0)
 
 
@@ -126,7 +145,7 @@ class Paint():
         textTitleButton.grid(row=0, column=0)
         entryButton = Entry(textFrame, textvariable=self.textValue, bg="white", width=20 )
         entryButton.grid(row=1, column=0)
-        clearButton = Button(textFrame, text="Limpiar", bg="white", width=20, command=lambda:self.textValue.set(""))
+        clearButton = Button(textFrame, text="Limpiar", bg="white", width=80, command=lambda:self.textValue.set(""), image=limpiarIcon, compound=LEFT)
         clearButton.grid(row=2, column=0)
 
         noteFrame = Frame(frame1 ,  height=100 , width=200 , relief=SUNKEN , borderwidth=3)
@@ -147,6 +166,8 @@ class Paint():
         self.canvas.bind("<B3-Motion>", self.paintRight)
         self.canvas.bind("<Button-1>", self.writeText)
         self.canvas.bind("<ButtonPress-2>", self.start_forma)
+        self.canvas.bind("<B2-Motion>", self.draw_forma)
+        self.canvas.bind("<ButtonRelease-2>", self.finalize_forma)
 
         self.ventana.mainloop()
 
@@ -192,6 +213,54 @@ class Paint():
             self.useOval()
         elif forma == "Poligono":
             self.usePolygon()
+
+    def draw_forma(self, event):
+        if self.forma:
+            if self.forma_start_x and self.forma_start_y:
+                self.canvas.delete("preview")
+                if self.forma == "line":
+                    self.canvas.create_line(self.forma_start_x, self.forma_start_y, event.x, event.y, fill=self.colorTrazo.get(), width=self.tamañoTrazo.get(), tags="preview")
+                elif self.forma == "rectangle":
+                    self.canvas.create_rectangle(self.forma_start_x, self.forma_start_y, event.x, event.y, outline=self.colorTrazo.get(), width=self.tamañoTrazo.get(), tags="preview")
+                elif self.forma == "oval":
+                    self.canvas.create_oval(self.forma_start_x, self.forma_start_y, event.x, event.y, outline=self.colorTrazo.get(), width=self.tamañoTrazo.get(), tags="preview")
+                elif self.forma == "polygon":
+                    if self.forma_start_x and self.forma_start_y:
+                        num_vertices = 5
+                        angle_increment = 360 / num_vertices
+                        radius = math.sqrt((event.x - self.forma_start_x)**2 + (event.y - self.forma_start_y)**2)
+                        points = []
+                        for i in range(num_vertices):
+                            angle = math.radians(i * angle_increment)
+                            x = self.forma_start_x + radius * math.cos(angle)
+                            y = self.forma_start_y + radius * math.sin(angle)
+                            points.extend([x, y])
+                        self.canvas.create_polygon(points, fill="", outline=self.colorTrazo.get(), width=self.tamañoTrazo.get(), tags="preview")
+
+    def finalize_forma(self, event):
+        if self.forma:
+            self.canvas.delete("preview")
+            if self.forma_start_x and self.forma_start_y:
+                if self.forma:
+                    if self.forma == "line":
+                        self.actions.append(self.canvas.create_line(self.forma_start_x, self.forma_start_y, event.x, event.y, fill=self.colorTrazo.get(), width=self.tamañoTrazo.get()))
+                    elif self.forma == "rectangle":
+                        self.actions.append(self.canvas.create_rectangle(self.forma_start_x, self.forma_start_y, event.x, event.y, outline=self.colorTrazo.get(), width=self.tamañoTrazo.get()))
+                    elif self.forma == "oval":
+                        self.actions.append(self.canvas.create_oval(self.forma_start_x, self.forma_start_y, event.x, event.y, outline=self.colorTrazo.get(), width=self.tamañoTrazo.get()))
+                    elif self.forma == "polygon":
+                        if self.forma_start_x and self.forma_start_y:
+                            num_vertices = 5
+                            angle_increment = 360 / num_vertices
+                            radius = math.sqrt((event.x - self.forma_start_x)**2 + (event.y - self.forma_start_y)**2)
+                            points = []
+                            for i in range(num_vertices):
+                                angle = math.radians(i * angle_increment)
+                                x = self.forma_start_x + radius * math.cos(angle)
+                                y = self.forma_start_y + radius * math.sin(angle)
+                                points.extend([x, y])
+                            self.actions.append(self.canvas.create_polygon(points, fill="", outline=self.colorTrazo.get(), width=self.tamañoTrazo.get()))
+            self.forma_start_x, self.forma_start_y = None, None
 
     def selectColor(self):
         selectedColor = colorchooser.askcolor("blue", title="Seleccionar Color")
