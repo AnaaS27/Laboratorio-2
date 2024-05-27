@@ -1,10 +1,12 @@
 from tkinter import * 
 from tkinter import colorchooser
 import PIL.ImageGrab as ImageGrab
+from PIL import Image, ImageTk
 from tkinter import filedialog
 from tkinter import messagebox
 import tkinter as tk
 import math
+from Tooltip import Tooltip
 
 
 class Paint():
@@ -17,7 +19,7 @@ class Paint():
         self.opciones = [1,2,3,4,5,10,20,30,40,50,60,70,80,90,100]
 
         self.tamañoTrazo = IntVar()
-        self.tamañoTrazo.set(1)
+        self.tamañoTrazo.set(5)
 
         self.colorTrazo = StringVar()
         self.colorTrazo.set("black")
@@ -38,7 +40,17 @@ class Paint():
         self.forma_start_x = None
         self.forma_start_y = None
 
+        self.previous_x = None
+        self.previous_y = None
+
         self.actions = []
+
+        self.selected_item = None
+        self.prev_x = None
+        self.prev_y = None
+        self.image_id = None
+
+        self.image_moving = False
 
         self.textValue = StringVar()
 
@@ -54,10 +66,12 @@ class Paint():
         pencilIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\pencil.png")
         pencilButton = Button(toolsFrame , text="Lapiz" , bg="white", width=65,  image=pencilIcon, compound=LEFT, command=self.usePencil)
         pencilButton.grid(row=0 , column=0)
+        Tooltip(pencilButton, "Presione para Dibujar")
 
         eraserIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\borrador.png")
         eraserButton = Button(toolsFrame , text="Borrador" , bg="white", width=65, command=self.useEraser, image=eraserIcon, compound=LEFT)
         eraserButton.grid(row=1 , column=0)
+        Tooltip(eraserButton, "Presione para borrar")
 
         toolsLabel = Label(toolsFrame , text="Herramientas" , width=9)
         toolsLabel.grid(row=4 , column=0)
@@ -67,6 +81,7 @@ class Paint():
 
         defaultButton = Button(sizeFrame, text="Por Defecto" , bg="white", width=10, command=self.usePencil)
         defaultButton.grid(row=0 , column=0)
+        Tooltip(defaultButton, "Opcion predeterminada")
 
         sizeList = OptionMenu(sizeFrame, self.tamañoTrazo, *self.opciones)
         sizeList.grid(row=1, column=0)
@@ -96,16 +111,22 @@ class Paint():
 
         redButton = Button(colorsFrame , bg="Red" , width=3 , command=lambda: self.colorTrazo.set("red"))
         redButton.grid(row=0, column=0)
+        Tooltip(redButton, "Color Rojo")
         greenButton = Button(colorsFrame , bg="Green" , width=3 , command=lambda: self.colorTrazo.set("Green"))
         greenButton.grid(row=1, column=0)
+        Tooltip(greenButton, "Color Verde")
         blueButton = Button(colorsFrame , bg="Blue" , width=3 , command=lambda: self.colorTrazo.set("Blue"))
         blueButton.grid(row=2 , column=0) 
+        Tooltip(blueButton, "Color Azul")
         yellowButton = Button(colorsFrame , bg="yellow" , width=3 , command=lambda: self.colorTrazo.set("yellow"))
         yellowButton.grid(row=0, column=1)
+        Tooltip(yellowButton, "Color Amarillo")
         orangeButton = Button(colorsFrame , bg="orange" , width=3 , command=lambda: self.colorTrazo.set("orange"))
         orangeButton.grid(row=1, column=1)
+        Tooltip(orangeButton, "Color Naranja")
         purpleButton = Button(colorsFrame , bg="purple" , width=3 , command=lambda: self.colorTrazo.set("purple"))
         purpleButton.grid(row=2 , column=1)
+        Tooltip(purpleButton, "Color Purpura")
 
         saveImageFrame = Frame(frame1, height=100, width=100, relief=SUNKEN, borderwidth=3,)
         saveImageFrame.grid(row = 0 , column=4)
@@ -113,14 +134,20 @@ class Paint():
         nuevoIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\new.png")
         newImageButton = Button(saveImageFrame , text="Nuevo" , bg="white" , width=80, height=20, command=self.createNew, image=nuevoIcon)
         newImageButton.grid(row=1 , column=0)
+        Tooltip(newImageButton, "Presione para crear un nuevo lienzo")
+        newImageButton.bind("<Control-n>", self.createNew)
 
         limpiarIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\limpiar.png")
         clearImageButton = Button(saveImageFrame , text="Limpiar" , bg="white" , width=80 , command=self.clear, image=limpiarIcon, compound=LEFT)
         clearImageButton.grid(row=2 , column=0)
+        Tooltip(clearImageButton, "Presione Para Limpiar Lienzo")
+        clearImageButton.bind("<Control-l>", self.clear)
 
         guardarIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\guardar.png")
         saveImageButton = Button(saveImageFrame , text="Guardar" , bg="white" , width=80, command=self.saveImage, image=guardarIcon, compound=LEFT)
         saveImageButton.grid(row=0, column=0)
+        Tooltip(saveImageButton, "Presione Para Guardar Imagen")
+        saveImageButton.bind("<Control-N>", self.saveImage)
 
         helpSettingFrame = Frame(frame1, height=100, width=100, relief=SUNKEN, borderwidth=3)
         helpSettingFrame.grid(row=0, column=5)
@@ -128,14 +155,20 @@ class Paint():
         ayudaIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\help.png")   
         helpButton = Button(helpSettingFrame, text="Ayuda", bg="white", width=80, command=help, image=ayudaIcon, compound=LEFT)
         helpButton.grid(row=1, column=0)
-
+        Tooltip(helpButton, "Ayuda")
+        helpButton.bind("<Control-a>", self.help)
+        
         deshacerIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\deshacer.png")
         undoButton = Button(helpSettingFrame, text="Deshacer", bg="white", width=80, command=self.undo, image=deshacerIcon, compound=LEFT)
         undoButton.grid(row=0, column=0)
-        
+        Tooltip(undoButton, "Presione el Boton Para Deshacer")
+        undoButton.bind("Control-d", self.undo)
+
         infoIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\information.png")
         aboutButton = Button(helpSettingFrame, text="Acerca De", bg="white", width=80, command=self.about, image=infoIcon, compound=LEFT)
         aboutButton.grid(row=2, column=0)
+        Tooltip(aboutButton, "Acerca de")
+        aboutButton.bind("<Control-i>", self.about)
 
 
         textFrame = Frame(frame1, height=100, width=200, relief=SUNKEN, borderwidth=3)
@@ -143,16 +176,27 @@ class Paint():
 
         textTitleButton = Label(textFrame, text="Escriba su texto aqui:", bg="white", width=20 )
         textTitleButton.grid(row=0, column=0)
+        Tooltip(textTitleButton, "Escriba su Texto Aqui")
         entryButton = Entry(textFrame, textvariable=self.textValue, bg="white", width=20 )
         entryButton.grid(row=1, column=0)
         clearButton = Button(textFrame, text="Limpiar", bg="white", width=80, command=lambda:self.textValue.set(""), image=limpiarIcon, compound=LEFT)
         clearButton.grid(row=2, column=0)
+        Tooltip(clearButton, "Presione Para Ingresar el Texto Limpiar")
 
-        noteFrame = Frame(frame1 ,  height=100 , width=200 , relief=SUNKEN , borderwidth=3)
+        imagenesIcon = tk.PhotoImage(file=r"Laboratorio-2\icons\pictures.png")
+        importFrame = Frame(frame1, height=100, width=200, relief=SUNKEN, borderwidth=3)
+        importFrame.grid(row=0, column=8)
+        importImageButton = Button(importFrame, text="Insertar Imagen", bg="white", width=100, command=self.import_image, image=imagenesIcon, compound=LEFT)
+        importImageButton.grid(row=3, column=0)
+        Tooltip(importImageButton, "Presione para buscar\nuna imagen e insertar")
+        importImageButton.bind("<Control-t>", self.import_image)
+
+        noteFrame = Frame(frame1 ,  height=100 , width=150 , relief=SUNKEN , borderwidth=3)
         noteFrame.grid(row = 0 , column = 7)
 
-        textTitleButton = Text(noteFrame, bg="white", width=40, height=4 )
+        textTitleButton = Text(noteFrame, bg="white", width=32, height=4 )
         textTitleButton.grid(row=0, column=0) 
+        Tooltip(textTitleButton, "Ingrese su Texto")
 
         self.create_menu(toolsFrame)
 
@@ -162,12 +206,13 @@ class Paint():
         self.canvas = Canvas(frame2, height=500, width=1100, bg="white")
         self.canvas.grid(row=0, column=0)
         self.canvas.bind("<B1-Motion>", self.paint)
-        self.canvas.bind("<ButtonRelease-1>" , self.paint)
+        self.canvas.bind("<ButtonRelease-1>" , self.reset)
         self.canvas.bind("<B3-Motion>", self.paintRight)
         self.canvas.bind("<Button-1>", self.writeText)
         self.canvas.bind("<ButtonPress-2>", self.start_forma)
         self.canvas.bind("<B2-Motion>", self.draw_forma)
         self.canvas.bind("<ButtonRelease-2>", self.finalize_forma)
+        self.canvas.bind("<Double-Button-1>", self.controlImagen)
 
         self.ventana.mainloop()
 
@@ -275,20 +320,22 @@ class Paint():
             self.previousColor2Button["bg"] = self.previousColor2.get()
 
     def paint(self, event):
-            x = event.x
-            y = event.y
-            self.currentPoint = [x, y]
+            if not self.image_moving:
+                x = event.x
+                y = event.y
+                self.currentPoint = [x, y]
 
-            if self.prevPoint != [0, 0]:
-                self.actions.append(self.canvas.create_line(self.prevPoint[0], self.prevPoint[1], self.currentPoint[0], self.currentPoint[1],
-                                        fill=self.colorTrazo.get(), width=self.tamañoTrazo.get()))
+                if self.prevPoint != [0, 0]:
+                    self.actions.append(self.canvas.create_line(self.prevPoint[0], self.prevPoint[1], self.currentPoint[0], self.currentPoint[1],
+                                            fill=self.colorTrazo.get(), width=self.tamañoTrazo.get()))
 
-            self.prevPoint = self.currentPoint
+                self.prevPoint = self.currentPoint
     
     def paintRight(self,event):
-        x = event.x
-        y = event.y
-        self.actions.append(self.canvas.create_arc(x,y,x+self.tamañoTrazo.get(), y+self.tamañoTrazo.get(), fill = self.colorTrazo.get(), outline=self.colorTrazo.get(), width=self.tamañoTrazo.get()))
+        if not self.image_moving:
+            x = event.x
+            y = event.y
+            self.actions.append(self.canvas.create_arc(x,y,x+self.tamañoTrazo.get(), y+self.tamañoTrazo.get(), fill = self.colorTrazo.get(), outline=self.colorTrazo.get(), width=self.tamañoTrazo.get()))
 
     def reset(self, event):
         self.prevPoint = [0, 0]
@@ -333,10 +380,41 @@ class Paint():
         messagebox.showinfo("Acerca de", "Aplicacion de Pintura para estimular la creatividad de las personas")
 
     def writeText(self, event):
+        if not self.image_moving:
             x = event.x
             y = event.y
             self.actions.append(self.canvas.create_text(x, y, fill=self.colorTrazo.get(), font=("Arial", 20), text=self.textValue.get()))
             self.textValue.set("")
+    
+    def import_image(self):
+        image_path = filedialog.askopenfilename()
+        if image_path:
+            img = Image.open(image_path)
+            self.img = ImageTk.PhotoImage(img)
+            self.image_id = self.canvas.create_image(0, 0, anchor=NW, image=self.img)
+            self.canvas.tag_bind(self.image_id, "<ButtonPress-1>", self.imagen_click)
+            self.canvas.tag_bind(self.image_id, "<B1-Motion>", self.ArrastrarImagen)
+            self.actions.append(self.image_id)
+            messagebox.showinfo("Advertencia", "Para volver a pintar, haga doble clic en el lienzo\nY al mover la imagen repita la misma accion")
+
+    def imagen_click(self, event):
+        self.prev_x = event.x
+        self.prev_y = event.y
+        self.image_moving = True
+
+    def ArrastrarImagen(self, event):
+        if self.image_moving:
+            dx = event.x - self.prev_x
+            dy = event.y - self.prev_y
+            self.canvas.move(self.image_id, dx, dy)
+            self.prev_x = event.x
+            self.prev_y = event.y
+        else:
+            self.paint()
+            self.paintRight()
+
+    def controlImagen(self, event):
+        self.image_moving = False
     
 
 app = Paint()
